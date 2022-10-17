@@ -23,7 +23,8 @@ app.post('/cervezas/', function(req, res) {
   res.json({ mensaje: '¡Cerveza añadida!' });   
 })
 
-app.del('/cervezas/:name', function(req, res) {
+app.del('/cervezas/:name', function(req, res) { 
+  //los dos puntos indican que lo que sigue es un parametro por lo que en el tunder no hay que incluirlos
   let nameToSearch = req.params.name;
   beers = arrayRemove(beers,nameToSearch);
   console.log(beers);
