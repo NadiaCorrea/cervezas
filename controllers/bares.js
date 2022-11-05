@@ -1,7 +1,7 @@
 let db = require('../models/db');
 db = db.connect('./data', ['bares']);
 const url = require('url');
-const { response } = require('express');
+const {response} = require('express');
 
 //Properties of bares - id, name, address, location
 

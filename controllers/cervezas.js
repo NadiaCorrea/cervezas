@@ -1,63 +1,89 @@
-//let beers=[{name:"Cristal", type:"IPA", grading:"4.6"},{name:"Cruz Campo", type:"IPA", grading:"4.8"}];
-let db = require('../models/db');
-db = db.connect('./data', ['cervezas']);
-const url = require('url');
-const { response } = require('express');
+const db = require('../models/db');
+const {response, request} = require('express');
+const Cerveza = require('../models/cerveza');
+// db = db.connect('./data', ['cervezas']);
+// const url = require('url');
 
-function getCervezas(req,res){
-    //obtengo los query params que se envían en la url 
-    let query = url.parse(req.url, true).query;
-    // count the number of keys/properties of an object
-    if (Object.keys(query).length == 0){
-        res.json(db.cervezas.find());
-    } else{
-        if (query.Precio === undefined){
-            query.Precio = "1€";
+async function getCervezas(req,res){
+    const {Nombre, Descripción, Graduación, Envase, Precio} = req.query;
+    const query = {Nombre, Descripción, Graduación, Envase, Precio};
+    for(const key in query){
+        if(query[key] === undefined){
+            delete query[key];
         }
-        //console.log(query);
-        res.json(db.cervezas.find(query));
     }
+    const cervezas = await Cerveza.find(query);
+    res.json(cervezas);
 }
+
+// function getCervezas(req,res){
+//     //obtengo los query params que se envían en la url 
+//     let query = url.parse(req.url, true).query;
+//     // count the number of keys/properties of an object
+//     if (Object.keys(query).length == 0){
+//         res.json(db.cervezas.find());
+//     } else{
+//         if (query.Precio === undefined){
+//             query.Precio = "1€";
+//         }
+//         //console.log(query);
+//         res.json(db.cervezas.find(query));
+//     }
+// }
 
 /*Un recurso GET que recibe un parámetro 
 y devuelve el documento con dicho id.*/
-function getCerveza(req, res){
-    let idToSearch = req.params.id;
-    let itemToSearch = {_id: idToSearch}
-    res.json(db.cervezas.findOne(itemToSearch));
+function getCerveza(req = request, res = response){
+    const idToSearch = req.params.id;
+    const cerveza = db.cervezas.find({_id: idToSearch});
 
+    if(cerveza.length){
+        res.json(cerveza);
+    } else{
+        res.json({ message: `La cerveza ${id} no existe` });
+    }
 };
+
 /*Un recurso POST para 
 crear nuevos documentos de ese recurso.*/
+async function addCerveza(req =request,res = response){
+    const {Nombre, Descripción, Graduación, Envase, Precio} = req.body;
+    const cerveza = new Cerveza({Nombre, Descripción, Graduación, Envase, Precio});
 
-function addCerveza(req,res){
-    let newBeer = req.body;
-    db.cervezas.save(newBeer);
-    res.json({ mensaje: '¡Cerveza añadida!' }); 
+    //guardar en base de datos
+    await cerveza.save();
+    res.json({cerveza}); 
 }
 
 /*Un recurso DELETE para eliminar documentos.*/
 
-function deleteCerveza(req,res){
-    let itemToSearch = req.params.id;
-    let beerToDelete = {_id: itemToSearch}
-    db.cervezas.remove(beerToDelete);
-    res.json({ mensaje: 'Cerveza eliminada.'}) 
+function deleteCerveza(req = request, res =response){
+    const itemToSearch = req.params.id;
+    const beerToDelete = db.cervezas.remove({_id: itemToSearch});
+    res.json(beerToDelete);
 };
 
 
 /*Un recurso PUT para editar documentos.*/
+function editCerveza(req = request, res = response){
+    const itemToUpdate = req.params.id;
+    const newBeer = req.body;
+    const updatedBeer = db.cervezas.update({_id: itemToUpdate}, newBeer);
 
- function editCerveza(req, res){
-    let itemToUpdate = req.params.id;
-    let newBeer = req.body;
-    let itemToSearch = {_id: itemToUpdate};
-    let options = {
-        multi: false,
-        upsert: false
-    }
-    db.cervezas.update(itemToSearch, newBeer, options);
+    res.json(updatedBeer);
 
-    res.json({ mensaje: 'Cerveza actualizada!'} );
 }
+
+//  function editCerveza(req = request, res = response){
+//     let itemToUpdate = req.params.id;
+//     let newBeer = req.body;
+//     let itemToSearch = {_id: itemToUpdate};
+//     let options = {
+//         multi: false,
+//         upsert: false
+//     }
+//     db.cervezas.update(itemToSearch, newBeer, options);
+
+//     res.json({ mensaje: 'Cerveza actualizada!'} );
+// }
 module.exports = {getCervezas, getCerveza, addCerveza, deleteCerveza, editCerveza};
