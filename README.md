@@ -1,19 +1,3 @@
-# cervezas
+# cervezasMongoDB
 
-API REST utilizando express cumpliendo los siguientes requisitos:
-
-La API debe constar al menos de dos recursos, cervezas y bares.
-
-Debe tener persistencia a través de diskdb.
-
-Ambos recursos deben tener al menos los siguientes endpoints:
-
-Un recurso GET que devuelve todos los documentos de la colección de ese recurso. Además este recurso permitirá filtrar por cualquiera de los campos del documento a través de query params. Al menos uno de ellos debe tener un valor por defecto si no se manda en la url.
-
-Un recurso GET que recibe un parámetro y devuelve el documento con dicho id.
-
-Un recurso POST para crear nuevos documentos de ese recurso.
-
-Un recurso DELETE para eliminar documentos.
-
-Un recurso PUT para editar documentos.
+En la siguiente tarea se pide completar el proyecto en el que hemos estado trabajando de cervezas. Para ello tendremos que tener todas las peticiones GET de todos objetos de cada recurso pudiendo filtrar por cualquier campo, GET de un objeto de cada recurso mediante su id, POST para crear un objeto nuevo del recurso, PUT para modificar un objeto de cada recurso y DELETE para eliminar un objeto de cada recurso. Todas estas operaciones se tendrán que realizar contra la base de datos mongodb en atlas. Además de los recursos cervezas y bares crearemos uno nuevo llamado usuarios con los campos que consideres necesarios, pero al menos tendrá que tener nombre, apellidos, nick, email y contraseña. Además tendrás que poner algunas restricciones en los modelos. EXTRA: Realizar alguna relación entre los diferentes recursos. Validar algunos campos para evitar errores en el servidor.
