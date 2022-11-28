@@ -1,8 +1,5 @@
-const db = require('../models/db');
 const {response, request} = require('express');
-const Cerveza = require('../models/cerveza');
-// db = db.connect('./data', ['cervezas']);
-// const url = require('url');
+const beers = require('../models/cerveza');
 
 async function getCervezas(req,res){
     const {Nombre, Descripción, Graduación, Envase, Precio} = req.query;
@@ -12,43 +9,28 @@ async function getCervezas(req,res){
             delete query[key];
         }
     }
-    const cervezas = await Cerveza.find(query);
+    const cervezas = await beers.find(query);
     res.json(cervezas);
 }
 
-// function getCervezas(req,res){
-//     //obtengo los query params que se envían en la url 
-//     let query = url.parse(req.url, true).query;
-//     // count the number of keys/properties of an object
-//     if (Object.keys(query).length == 0){
-//         res.json(db.cervezas.find());
-//     } else{
-//         if (query.Precio === undefined){
-//             query.Precio = "1€";
-//         }
-//         //console.log(query);
-//         res.json(db.cervezas.find(query));
-//     }
-// }
-
 /*Un recurso GET que recibe un parámetro 
 y devuelve el documento con dicho id.*/
-function getCerveza(req = request, res = response){
+async function getCerveza(req = request, res = response){
     const idToSearch = req.params.id;
-    const cerveza = db.cervezas.find({_id: idToSearch});
+    const cerveza = await beers.find({_id: idToSearch});
 
     if(cerveza.length){
-        res.json(cerveza);
+        res.json(cerveza[0]);
     } else{
-        res.json({ message: `La cerveza ${id} no existe` });
+        res.json({ message: `La cerveza ${idToSearch} no existe` });
     }
-};
+}
 
 /*Un recurso POST para 
 crear nuevos documentos de ese recurso.*/
 async function addCerveza(req =request,res = response){
     const {Nombre, Descripción, Graduación, Envase, Precio} = req.body;
-    const cerveza = new Cerveza({Nombre, Descripción, Graduación, Envase, Precio});
+    const cerveza = new beers({Nombre, Descripción, Graduación, Envase, Precio});
 
     //guardar en base de datos
     await cerveza.save();
@@ -57,33 +39,29 @@ async function addCerveza(req =request,res = response){
 
 /*Un recurso DELETE para eliminar documentos.*/
 
-function deleteCerveza(req = request, res =response){
+async function deleteCerveza(req = request, res =response){
     const itemToSearch = req.params.id;
-    const beerToDelete = db.cervezas.remove({_id: itemToSearch});
-    res.json(beerToDelete);
-};
+    const beerToDelete = await beers.find({_id: itemToSearch});
 
+    if(beerToDelete.length){
+        await beers.deleteOne({_id: itemToSearch});
+        res.json(beerToDelete);
+    } else{
+        res.json({message: `La cerveza ${idToSearch} no existe.`});
+    }
+}
 
 /*Un recurso PUT para editar documentos.*/
-function editCerveza(req = request, res = response){
+async function editCerveza(req = request, res = response){
     const itemToUpdate = req.params.id;
     const newBeer = req.body;
-    const updatedBeer = db.cervezas.update({_id: itemToUpdate}, newBeer);
 
-    res.json(updatedBeer);
+    await beers.updateOne({_id: itemToUpdate}, newBeer);
+
+    let updatedbeer = await beers.find({_id: itemToUpdate});
+    
+    res.json(updatedbeer);
 
 }
 
-//  function editCerveza(req = request, res = response){
-//     let itemToUpdate = req.params.id;
-//     let newBeer = req.body;
-//     let itemToSearch = {_id: itemToUpdate};
-//     let options = {
-//         multi: false,
-//         upsert: false
-//     }
-//     db.cervezas.update(itemToSearch, newBeer, options);
-
-//     res.json({ mensaje: 'Cerveza actualizada!'} );
-// }
 module.exports = {getCervezas, getCerveza, addCerveza, deleteCerveza, editCerveza};
