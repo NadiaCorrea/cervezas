@@ -10,4 +10,5 @@ const validateFields = function(req, res, next){
     next(); // hay que ponerlo para que pase al siguiente en caso que no falle
 }
 
+
 module.exports = {validateFields}

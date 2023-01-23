@@ -15,7 +15,7 @@ const isValidRol = async (rol = '')=> {
 const existEmail = async(email) =>{
 	const emailDB = await User.findOne({email});
 	if (emailDB){
-		throw new Erro(`Email ${email} already exists in database`)
+		throw new Error(`Email ${email} already exists in database`)
 	}
 }
 

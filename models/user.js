@@ -36,4 +36,13 @@ const UserSchema = Schema({
     }
 });
 
+
+UserSchema.methods.toJSon = function(){
+    const {__v, contrasena, id, ...user} = this.toObject();// solo se guardan las propiedades que no están declaradas ( estas las excluye __v, contrasena, id)
+    user.uid = id;
+    return user;
+}
+
+
+
 module.exports = model( 'User', UserSchema );

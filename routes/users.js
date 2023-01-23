@@ -5,6 +5,8 @@ const { validateFields} = require('../helpers/validate-fields');
 const { isValidRol, existEmail, existUser } = require('../helpers/db-validators');
 
 const {getUsers, getUser, addUser, deleteUser, editUser} = require('../controllers/users');
+const { validateJWT } = require('../middlewares/validate-jwt');
+const { hasRol } = require('../middlewares/validate-rol');
 
 router.get('/', getUsers);
 
@@ -22,10 +24,14 @@ router.post('/', [
 addUser);
 
 router.delete('/:id', [
+    validateJWT,
+    isValidRol,
+    hasRol('ADMIN_ROLE', 'USER_ROLE'),
     check('id', 'No es un id válido').isMongoId(), //si no es id de mongo válido
     check('id').custom(existUser), 
     validateFields
 ],deleteUser);
+
 
 //nombre, apellidos, nick, rol
 router.put('/:id', [

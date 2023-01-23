@@ -9,7 +9,7 @@ const {addLogin} = require('../controllers/login')
 router.post('/', [
     check('email','Email is invalid').isEmail(),
     check('email').custom(existEmail),
-    check('password', 'Password cannot be empty').isEmpty(),
+    check('password', 'Password cannot be empty').not().isEmpty(),
     validateFields
 ], addLogin)
 

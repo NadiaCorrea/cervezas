@@ -12,7 +12,7 @@ async function getUsers(req=request, res= response){
             delete query[key];
         }
     }
-    query.state = false;
+    query.state = true;
 
     const result = await users.find(query).limit(limit).skip(skip);
     res.json(result);
@@ -52,8 +52,8 @@ async function addUser(req=request, res=response){
 async function deleteUser(req=request, res=response){
     const idToSearch = req.params.id;
     const userToDelete = await users.findByIdAndUpdate(idToSearch, {"state": false});
-
-    res.json({userToDelete});
+    const authenticatedUser = req.user;
+    res.json(userToDelete, authenticatedUser)
     //const userToDelete = await users.find({_id: idToSearch});
     // if(userToDelete.length){
     //     await users.deleteOne({_id: idToSearch});
